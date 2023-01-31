@@ -23,7 +23,7 @@ function addNote() {
 	let stickyBoard = document.getElementById('stickyBoard');
 
 	if (leftPos > stickyBoard.clientWidth) {
-		leftPos = 200;
+		leftPos = 230;
 		topPos += 175;
 	}
 	console.log(`attempting to add new note...`);

@@ -23,6 +23,10 @@
             <label for="selectUserDropDown">Select User: </label>
             <select name="selectUserDropDown" class="inputUserBar" id="selectUserDropDown" onchange="">
                 <option value="selectUserValue">Select a user</option>
+                <option value="Brianna">Brianna</option>
+                <option value="James">James</option>
+                <option value="Stephanie">Stephanie</option>
+                <option value="Steve">Steve</option>
             </select>
         </div>
         <!-- TODO: Create new user -->
@@ -36,14 +40,17 @@
     </div>
     <div id="main">
         <div id="sideBar">
-            <img id="stickyIcon" src="img/newNote2.png" ondblclick="addNote()">
             <div id="CRUD">
+                <img id="stickyIcon" src="img/newNote2.png" ondblclick="addNote()">
                 <form id="saveUserForm" method="POST" action="">
                     <input type="submit" id="saveButton" class="sideBarButton" value="Save Board" />
                 </form>
                 <form id="deleteUserForm" method="POST" action="">
                     <input type="submit" id="deleteButton" class="sideBarButton" value="Delete Board" />
                 </form>
+            </div>
+            <div id="about">
+                <a href="about.html"><img id="aboutIcon" src="img/info2.png"></a>
             </div>
         </div>
         <div id="stickyBoard">
