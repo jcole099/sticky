@@ -1,23 +1,92 @@
 <!DOCTYPE html>
 
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Sticky Note</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="style.css">
-    </head>
-    <body id="body">
-        <button onclick="test()">Test</button>
-        <div id="dragzone">
 
-            <div id="dragable" class="sticky"></div>
-            <!-- <div id="dragable2" class="sticky"></div> -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Sticky Note</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div id="userBar">
+        <!-- TODO: Load user data -->
+        <!-- This information will be downloaded locally once the webpage loads initially -->
+        <!-- Will funciton similarly to the dropdown on Update in Greentree -->
+        <div id="selectUser">
+            <label for="selectUserDropDown">Select User: </label>
+            <select name="selectUserDropDown" class="inputUserBar" id="selectUserDropDown" onchange="">
+                <option value="selectUserValue">Select a user</option>
+            </select>
         </div>
+        <!-- TODO: Create new user -->
+        <!-- This will just add a new username to the dropdown and select it -->
+        <!-- Saving the new user will be done with the "save" button -->
+        <div id="createUser">
+            <label for="createUserText">Create User: </label>
+            <input type="text" name='createUserText' class="inputUserBar" id='createUserText' required />
+            <input type="submit" value="Create" />
+        </div>
+    </div>
+    <div id="main">
+        <div id="sideBar">
+            <img id="stickyIcon" src="img/newNote2.png" ondblclick="addNote()">
+            <div id="CRUD">
+                <form id="saveUserForm" method="POST" action="">
+                    <input type="submit" id="saveButton" class="sideBarButton" value="Save Board" />
+                </form>
+                <form id="deleteUserForm" method="POST" action="">
+                    <input type="submit" id="deleteButton" class="sideBarButton" value="Delete Board" />
+                </form>
+            </div>
+        </div>
+        <div id="stickyBoard">
+            <h1>Sticky Board</h1>
+        </div>
+    </div>
 
-        
-        <script src="script.js" async defer></script>
-    </body>
+    <div id="editOverlay" onclick="closeEdit()">
+        <div id="editWindow">
+            <div id="textInput">
+                <textarea id="editNoteText" placeholder="Sticky Note text..."></textarea>
+            </div>
+            <div id="colorSelector">
+                <div class="colorBoxBorder">
+                    <div id="zff5bfe" class="colorBox" onclick="changeColor(this.id)"></div>
+                </div>
+                <div class="colorBoxBorder">
+                    <div id="zff5b5b" class="colorBox" onclick="changeColor(this.id)"></div>
+                </div>
+                <div class="colorBoxBorder">
+                    <div id="zffac5b" class="colorBox" onclick="changeColor(this.id)"></div>
+                </div>
+                <div class="colorBoxBorder">
+                    <div id="zfff15b" class="colorBox" onclick="changeColor(this.id)"></div>
+                </div>
+                <div class="colorBoxBorder">
+                    <div id="zabff5b" class="colorBox" onclick="changeColor(this.id)"></div>
+                </div>
+                <div class="colorBoxBorder">
+                    <div id="z5bffe3" class="colorBox" onclick="changeColor(this.id)"></div>
+                </div>
+            </div>
+            <div id="editButtons">
+                <button id="closeEditButton" class="editButton" onclick="closeEdit()">Close</button>
+                <button id="editSaveButton" class="editButton" onclick="saveNote()">Save Note</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
 </html>
+
+<!-- create new note image source -->
+<!-- <a href="https://www.flaticon.com/free-icons/post-it" title="Post it icons">Post it icons created by Freepik - Flaticon</a> -->

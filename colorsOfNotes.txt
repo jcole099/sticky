@@ -1,0 +1,17 @@
+yellow=fff15b
+yellowDark=f5e233
+
+green=abff5b
+gd=79f42b
+
+blue=5bffe3
+bd=33d3f5
+
+orange=ffac5b
+od=f57233
+
+red=ff5b5b
+rd=f53333
+
+purple=ff5bfe
+pd=c733f5
