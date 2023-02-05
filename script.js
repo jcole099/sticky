@@ -1,8 +1,6 @@
 // TODO: DOWNLOAD USER DATA
 // TODO: Load users into User dropdown
 
-//TODO: prevent user from dragging new note into side and top bars
-
 // Store note data here
 const userData = [];
 
@@ -14,7 +12,7 @@ const userData = [];
 let noteNum = 1;
 
 function addNote(leftPos, topPos) {
-	// some of this will be replaced when drag and drop is implemented
+	//note
 	let newNote = document.createElement('div');
 	newNote.setAttribute('id', `${'note' + noteNum}`);
 	newNote.setAttribute('class', 'note');
@@ -343,8 +341,21 @@ function dragNewNote() {
 		dragIcon.style.cursor = 'default';
 		dragIcon.style.display = 'none';
 
-		//TODO: insert sticky here
-		addNote(event.pageX - 75, event.pageY - 75);
+		const stickyBoard = document.getElementById('stickyBoard');
+		// const nodeChain = document.querySelectorAll(':hover');  cool, but doesn't work for this application
+		const nodeChain = document.elementsFromPoint(event.pageX, event.pageY);
+		if (nodeChain.length < 4) {
+			console.error('Cannot place a sticky note there.');
+			return;
+		}
+		const possibleStickyBoard = nodeChain[nodeChain.length - 4]; //sticky board is 4 indexes up from the end of the array
+		if (possibleStickyBoard.id === stickyBoard.id) {
+			//The user is attempting to place the sticky in the correct location
+			//Insert sticky here
+			addNote(event.pageX - 75, event.pageY - 75);
+		} else {
+			console.error('Cannot place a sticky note there.');
+		}
 	};
 
 	const dragMouseMove = (event) => {
@@ -374,3 +385,12 @@ function dragNewNote() {
 	};
 	staticIcon.onmousedown = dragMouseDown;
 }
+
+// document.addEventListener(
+// 	'mousemove',
+// 	(e) => {
+// 		console.clear();
+// 		console.log(document.querySelectorAll(':hover'));
+// 	},
+// 	{ passive: true }
+// );
