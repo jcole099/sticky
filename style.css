@@ -46,6 +46,10 @@ label {
 	width: 12rem;
 }
 
+#createUserButton {
+	padding: 0.2rem;
+}
+
 /* ////////////////////////////////// */
 /* MAIN */
 /* ////////////////////////////////// */
@@ -90,18 +94,30 @@ label {
 
 #CRUD {
 	margin-top: 2rem;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: center;
 }
 
 .sideBarButton {
 	width: 8rem;
 	height: 2.5rem;
 	margin-top: 0.8rem;
+	border: none;
+	border-radius: 3px;
 }
 
+#saveBoardButton {
+	background-color: rgb(144, 242, 241);
+}
+
+#saveBoardButton:mouse {
+}
 #aboutIcon {
-	width: 5rem;
+	width: 3rem;
 	cursor: pointer;
-	margin-bottom: 5rem;
+	margin-bottom: 1.5rem;
 }
 /* ////////////////////////////////// */
 /* STICKY BOARD */

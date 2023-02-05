@@ -1,15 +1,293 @@
-// TODO: DOWNLOAD USER DATA
-// TODO: Load users into User dropdown
+//	Author: James Cole
+//	Project: Sticky Note Application
+//	Class: CS361
+//	Date: 02/15/23
+//
 
 // Store note data here
-const userData = [];
+let userData = [];
+let noteNum = 1;
+
+//get data from server
+loadData();
+async function loadData() {
+	await fetch('http://jcole.net:22333/getUsers')
+		.then((response) => response.json())
+		.then((data) => {
+			userData = data;
+		});
+	const selectUserDrop = document.getElementById('selectUserDropDown');
+	//sort user data TODO:
+	userData = quickSort(userData, 0, userData.length - 1);
+
+	//add to users to the dropdown menu
+	for (let user of userData) {
+		let option = document.createElement('option');
+		option.innerHTML = user.userName;
+		option.value = user.userName;
+		selectUserDrop.options.add(option);
+	}
+}
+
+/////////////////////////////////////////////////////////
+// SORTING FUNCTIONS
+////////////
+
+// Quicksort function and helper functions COPIED FROM:
+// https://www.guru99.com/quicksort-in-javascript.html
+function swap(items, leftIndex, rightIndex) {
+	var temp = items[leftIndex];
+	items[leftIndex] = items[rightIndex];
+	items[rightIndex] = temp;
+}
+function partition(items, left, right) {
+	var pivot = items[Math.floor((right + left) / 2)].userName, //middle element
+		i = left, //left pointer
+		j = right; //right pointer
+	while (i <= j) {
+		while (items[i].userName < pivot) {
+			i++;
+		}
+		while (items[j].userName > pivot) {
+			j--;
+		}
+		if (i <= j) {
+			swap(items, i, j); //sawpping two elements
+			i++;
+			j--;
+		}
+	}
+	return i;
+}
+
+function quickSort(items, left, right) {
+	var index;
+	if (items.length > 1) {
+		index = partition(items, left, right); //index returned from partition
+		if (left < index - 1) {
+			//more elements on the left side of the pivot
+			quickSort(items, left, index - 1);
+		}
+		if (index < right) {
+			//more elements on the right side of the pivot
+			quickSort(items, index, right);
+		}
+	}
+	return items;
+}
+/////////////////////////////////////////////////////////////
+
+//load board data
+function loadBoard() {
+	noteNum = 1;
+	const selectUserDrop = document.getElementById('selectUserDropDown');
+	if (selectUserDrop.value === 'selectUserValue') return;
+
+	//Clear the sticky board
+	let allNotes = document.querySelectorAll('.note');
+	for (let note of allNotes) {
+		note.remove();
+	}
+
+	//get the object that the user selected
+	for (let user of userData) {
+		if (user.userName === selectUserDrop.value) {
+			//create each sticky element
+			for (let sticky of user.stickies) {
+				//note
+				let newNote = document.createElement('div');
+				newNote.setAttribute('id', `${sticky.id}`);
+				newNote.setAttribute('class', 'note');
+				newNote.setAttribute('ondblclick', `editNote(this.id)`);
+				let stickyBoard = document.getElementById('stickyBoard');
+				newNote.style.cssText = `left:${sticky.left};top:${sticky.top};z-index:${sticky.zIndex};background-image:url('img/${sticky.color}.png');`;
+				stickyBoard.appendChild(newNote);
+
+				//delete button
+				let deleteDiv = document.createElement('div');
+				deleteDiv.setAttribute('class', 'deleteDiv');
+				//get noteNum from sticky.id
+				let idIndex = sticky.id.slice(4);
+				deleteDiv.innerHTML = `<span id='delete${idIndex}' onclick='deleteNote(this.id)'>X</span>`;
+				newNote.appendChild(deleteDiv);
+
+				//note text
+				let regText = sticky.content;
+				let htmlText = regText.replace(/(?:\r\n|\r|\n)/g, '<br>');
+				let noteText = document.createElement('div');
+				noteText.setAttribute('class', 'noteText');
+				noteText.innerHTML = `${htmlText}`;
+				newNote.appendChild(noteText);
+				dragNote(newNote);
+				noteNum++;
+			}
+			break;
+		}
+	}
+}
+
+//Save Board
+//change background color of button on click
+let saveBoardButton = document.getElementById('saveBoardButton');
+saveBoardButton.addEventListener('mousedown', (e) => {
+	saveBoardButton.style.backgroundColor = 'rgb(95,218,217)';
+});
+saveBoardButton.addEventListener('mouseup', (e) => {
+	saveBoardButton.style.backgroundColor = 'rgb(144,242,241)';
+});
+function saveBoard() {
+	//get all stickies
+	const allNotes = document.querySelectorAll('.note');
+
+	//find user object in userData
+	let curUser = document.getElementById('selectUserDropDown').value;
+	if (curUser === 'selectUserValue') {
+		console.error('Select a valid user in order to save the board.');
+		return;
+	}
+	let userIndex;
+	for (let index in userData) {
+		if (userData[index].userName === curUser) {
+			//found the object
+			userIndex = index;
+		}
+	}
+	//create an array of object, assign array to stickes
+	let userStickies = [];
+	for (let note of allNotes) {
+		let htmlText = note.lastChild.innerHTML;
+		let regText = htmlText.split('<br>').join('\n');
+		let noteColor = note.style.backgroundImage.substring(9, 15);
+		userStickies.push({
+			id: note.id,
+			top: note.style.top,
+			left: note.style.left,
+			content: regText,
+			color: noteColor,
+			zIndex: note.zIndex,
+		});
+	}
+	//assign newly built sticky array to the appropriate user
+	userData[userIndex].stickies = userStickies;
+
+	//send request
+	fetch('http://jcole.net:22333/updateUser', {
+		method: 'POST',
+		body: JSON.stringify(userData[userIndex]),
+		headers: {
+			'Content-type': 'application/json; charset=UTF-8',
+		},
+	});
+}
+
+////////////////////////////////////////
+// Delete a user
+//
+function deleteUser() {
+	const currentUser = document.getElementById('selectUserDropDown').value;
+	//clear board
+	let allNotes = document.querySelectorAll('.note');
+	for (let note of allNotes) {
+		note.remove();
+	}
+
+	//set dropdown to default
+	document.getElementById('selectUserDropDown').value = 'selectUserValue';
+
+	//remove user from dropdown
+	const userOption = document.getElementById('selectUserDropDown');
+	for (let i = 0; i < userOption.length; i++) {
+		if (userOption.options[i].value === currentUser) {
+			userOption.remove(i);
+		}
+	}
+	//remove user from local userData
+	for (let index in userData) {
+		if (userData[index].userName === currentUser) {
+			userData.splice(index, 1);
+		}
+	}
+
+	//send request
+	const userObject = {
+		userName: currentUser,
+	};
+	fetch('http://jcole.net:22333/deleteUser', {
+		method: 'POST',
+		body: JSON.stringify(userObject),
+		headers: {
+			'Content-type': 'application/json; charset=UTF-8',
+		},
+	});
+}
+
+////////////////////////////////////////
+// Create a user
+//
+
+function checkEnter(element) {
+	if (event.key === 'Enter') {
+		createUser();
+	}
+}
+
+function createUser() {
+	const textValue = document.getElementById('createUserText').value;
+	document.getElementById('createUserText').value = '';
+	//check for other users with that name
+	for (let user of userData) {
+		if (user.userName == textValue) {
+			document.getElementById('createUserText').value =
+				'Error: Create a unique name';
+			return;
+		}
+	}
+	if (textValue === '') {
+		document.getElementById('createUserText').value =
+			'Error: Must enter a name';
+		return;
+	}
+	//register enter
+	userData.push({
+		userName: textValue,
+		stickies: [],
+	});
+
+	const selectUserDrop = document.getElementById('selectUserDropDown');
+
+	//sort data
+	userData = quickSort(userData, 0, userData.length - 1);
+
+	//remove all data from select
+	for (let i = selectUserDrop.options.length; i >= 0; i--) {
+		selectUserDrop.remove(i);
+	}
+
+	//add 'Select a user' to top of the select
+	let option = document.createElement('option');
+	option.innerHTML = 'Select a user';
+	option.value = 'selectUserValue';
+	selectUserDrop.options.add(option);
+	//reload select with sorted data
+	for (let user of userData) {
+		let option = document.createElement('option');
+		option.innerHTML = user.userName;
+		option.value = user.userName;
+		selectUserDrop.options.add(option);
+	}
+	//clear board when a new user is created
+	let allNotes = document.querySelectorAll('.note');
+	for (let note of allNotes) {
+		note.remove();
+	}
+
+	//select new user in the select
+	selectUserDrop.value = textValue;
+}
 
 ////////////////////////////////////////
 // CREATE A NEW STICKY NOTE
-// current functionality: double click icon
-// hopeful future functionality: drag and drop onto board
-
-let noteNum = 1;
+//
 
 function addNote(leftPos, topPos) {
 	//note
@@ -134,7 +412,7 @@ function saveNote() {
 	let textArea = document.getElementById('editNoteText');
 	let note = document.getElementById(noteID);
 	let regText = textArea.value;
-	//COPIED FROM: https://stackoverflow.com/questions/784539/how-do-i-replace-all-line-breaks-in-a-string-with-br-elements
+	//Regular expression COPIED FROM: https://stackoverflow.com/questions/784539/how-do-i-replace-all-line-breaks-in-a-string-with-br-elements
 	regText = regText.replace(/(?:\r\n|\r|\n)/g, '<br>');
 	note.lastChild.innerHTML = regText;
 
@@ -144,46 +422,7 @@ function saveNote() {
 	let colorHex = colorBox.id;
 	colorHex = colorHex.slice(1);
 	note.style.backgroundImage = `url('img/${colorHex}.png')`;
-
-	// Get note data and save
-	let noteData = findNoteData(noteID);
-	if (noteData === 0) {
-		// no note data, create a new one
-		noteData = {
-			id: noteID,
-			color: colorHex,
-			content: textArea.value,
-		};
-	}
-	saveNoteData(noteID, noteData);
-
 	closeEdit();
-}
-
-function findNoteData(id) {
-	if (userData.length > 0) {
-		for (let note of userData) {
-			if (note.id === id) {
-				return note;
-			}
-		}
-	}
-	return 0;
-}
-
-function saveNoteData(id, noteData) {
-	if (userData.length > 0) {
-		for (let i in userData) {
-			if (userData[i].id === id) {
-				userData[i] = noteData;
-			}
-		}
-		//couldn't find the data, add the data...
-		userData.push(noteData);
-	} else {
-		// userData has no data, add the data...
-		userData.push(noteData);
-	}
 }
 
 //Keep textarea input within the bounds of 21 cols, 9 rows
@@ -222,7 +461,7 @@ function rotaryZIndex(curNote) {
 	curNote.style.zIndex = allNotes.length;
 }
 
-// ADAPTED FROM:
+// The dragNote function has been ADAPTED FROM:
 // https://dev.to/shantanu_jana/how-to-create-a-draggable-div-in-javascript-iff
 const dragNote = (note) => {
 	let pos1 = 0,
@@ -385,12 +624,3 @@ function dragNewNote() {
 	};
 	staticIcon.onmousedown = dragMouseDown;
 }
-
-// document.addEventListener(
-// 	'mousemove',
-// 	(e) => {
-// 		console.clear();
-// 		console.log(document.querySelectorAll(':hover'));
-// 	},
-// 	{ passive: true }
-// );

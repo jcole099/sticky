@@ -12,21 +12,18 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
 </head>
 
 <body>
     <div id="userBar">
-        <!-- TODO: Load user data -->
+        <!-- Load user data -->
         <!-- This information will be downloaded locally once the webpage loads initially -->
         <!-- Will funciton similarly to the dropdown on Update in Greentree -->
         <div id="selectUser">
             <label for="selectUserDropDown">Select User: </label>
-            <select name="selectUserDropDown" class="inputUserBar" id="selectUserDropDown" onchange="">
+            <select name="selectUserDropDown" class="inputUserBar" id="selectUserDropDown" onchange="loadBoard()">
                 <option value="selectUserValue">Select a user</option>
-                <option value="Brianna">Brianna</option>
-                <option value="James">James</option>
-                <option value="Stephanie">Stephanie</option>
-                <option value="Steve">Steve</option>
             </select>
         </div>
         <!-- TODO: Create new user -->
@@ -34,8 +31,9 @@
         <!-- Saving the new user will be done with the "save" button -->
         <div id="createUser">
             <label for="createUserText">Create User: </label>
-            <input type="text" name='createUserText' class="inputUserBar" id='createUserText' required />
-            <input type="submit" value="Create" />
+            <input type="text" name='createUserText' class="inputUserBar" id='createUserText'
+                onkeydown="checkEnter(this)" />
+            <button id="createUserButton" onclick="createUser()">Create</button>
         </div>
     </div>
     <div id="main">
@@ -43,12 +41,8 @@
             <div id="CRUD">
                 <img id="stickyIcon" src="img/newNote2.png">
                 <div id="dragStickyIcon"></div>
-                <form id="saveUserForm" method="POST" action="">
-                    <input type="submit" id="saveButton" class="sideBarButton" value="Save Board" />
-                </form>
-                <form id="deleteUserForm" method="POST" action="">
-                    <input type="submit" id="deleteButton" class="sideBarButton" value="Delete Board" />
-                </form>
+                <button id="saveBoardButton" class="sideBarButton" onclick="saveBoard()">Save Board</button>
+                <button id="deleteUserButton" class="sideBarButton" onclick="deleteUser()">Delete User</button>
             </div>
             <div id="about">
                 <a href="about.html"><img id="aboutIcon" src="img/info2.png"></a>
