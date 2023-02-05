@@ -44,7 +44,7 @@ function addNote() {
 	padding-top: 1.5rem;`;
 
 	leftPos += 175;
-	document.body.appendChild(newNote);
+	stickyBoard.appendChild(newNote);
 
 	noteNum++;
 }
@@ -191,6 +191,16 @@ textarea.onkeyup = function () {
 // current functionality: none
 // hopeful future functionality: move sticky around on board
 // MOVEABLE STICKY:
+
+document.addEventListener('mousedown', (e) => {
+	// e.target same as value returned from document.getelementbyID
+	if (e.target.className != 'note') {
+		return;
+	}
+	console.log('Stick clicked!');
+	// dragElement(e.target, stickyBoard);
+});
+
 // COPIED FROM:
 // https://dev.to/shantanu_jana/how-to-create-a-draggable-div-in-javascript-iff
 const dragElement = (element, dragzone) => {
