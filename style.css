@@ -157,12 +157,30 @@ label {
 	height: 150px;
 	opacity: 1;
 	background-size: contain;
-	padding: 0.3rem;
-	padding-top: 1.5rem;
+	padding-left: 0.3rem;
+	padding-right: 0.3rem;
+	padding-bottom: 0.3rem;
+	padding-top: 0.1rem;
 }
 
 .note.drag {
 	/* box-shadow: 3px 6px 24px rgba(0, 0, 0, 0.5); */
+}
+
+.deleteDiv {
+	height: 1.5rem;
+	text-align: right;
+	padding-right: 0.3rem;
+}
+
+.deleteDiv span {
+	cursor: pointer;
+	font-size: 1.1rem;
+}
+
+.noteText {
+	width: 100%;
+	height: 100%;
 }
 
 #underNoteBoxShadow {

@@ -1,6 +1,8 @@
 // TODO: DOWNLOAD USER DATA
 // TODO: Load users into User dropdown
 
+//TODO: prevent user from dragging new note into side and top bars
+
 // Store note data here
 const userData = [];
 
@@ -18,15 +20,53 @@ function addNote(leftPos, topPos) {
 	newNote.setAttribute('class', 'note');
 	newNote.setAttribute('ondblclick', `editNote(this.id)`);
 	let stickyBoard = document.getElementById('stickyBoard');
-
-	newNote.style.cssText = `left:${leftPos}px;top:${topPos}px;background-image: url('img/fff15b.png');z-index:${noteNum}`;
-
+	newNote.style.cssText = `left:${leftPos}px;top:${topPos}px;z-index:${noteNum};background-image: url('img/fff15b.png');`;
 	stickyBoard.appendChild(newNote);
+
+	//delete button
+	let deleteDiv = document.createElement('div');
+	deleteDiv.setAttribute('class', 'deleteDiv');
+	deleteDiv.innerHTML = `<span id='delete${noteNum}' onclick='deleteNote(this.id)'>X</span>`;
+	newNote.appendChild(deleteDiv);
+
+	//note text
+	let noteText = document.createElement('div');
+	noteText.setAttribute('class', 'noteText');
+	noteText.innerHTML = '';
+	newNote.appendChild(noteText);
 
 	//initialize newNote.onmousedown event (prevents the user from having to click the note twice)
 	dragNote(newNote);
-
 	noteNum++;
+}
+////////////////////////////////////////
+// Delete Sticky Note
+function deleteNote(deleteID) {
+	const deleteButton = document.getElementById(deleteID);
+	const curNote = deleteButton.parentElement.parentElement;
+	let curIndex = curNote.style.zIndex;
+	let idNumDeleted = parseInt(curNote.id.slice(4));
+	curNote.remove();
+
+	//decrement notenum
+	noteNum--;
+
+	//reset ids
+	//reset z-indexes
+	let allNotes = document.querySelectorAll('.note');
+	for (let note of allNotes) {
+		//lower all z-index that were greater than the
+		//	deleted note
+		if (note.style.zIndex > curIndex) {
+			note.style.zIndex -= 1;
+		}
+		//decrease all ids that were greater than the delete note
+		let loopIdNum = parseInt(note.id.slice(4));
+		if (loopIdNum > idNumDeleted) {
+			loopIdNum--;
+			note.id = 'note' + loopIdNum.toString();
+		}
+	}
 }
 
 ////////////////////////////////////////
@@ -36,7 +76,7 @@ function editNote(noteID) {
 	//load text
 	let textArea = document.getElementById('editNoteText');
 	let note = document.getElementById(noteID);
-	let htmlText = note.innerHTML;
+	let htmlText = note.lastChild.innerHTML;
 	let regText = htmlText.split('<br>').join('\n');
 	textArea.value = regText;
 
@@ -98,7 +138,7 @@ function saveNote() {
 	let regText = textArea.value;
 	//COPIED FROM: https://stackoverflow.com/questions/784539/how-do-i-replace-all-line-breaks-in-a-string-with-br-elements
 	regText = regText.replace(/(?:\r\n|\r|\n)/g, '<br>');
-	note.innerHTML = regText;
+	note.lastChild.innerHTML = regText;
 
 	// SET NOTE BACKGROUND IMAGE
 	let activeColorBox = document.querySelector('.activeColorBox');
