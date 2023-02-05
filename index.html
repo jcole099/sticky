@@ -41,7 +41,8 @@
     <div id="main">
         <div id="sideBar">
             <div id="CRUD">
-                <img id="stickyIcon" src="img/newNote2.png" ondblclick="addNote()">
+                <img id="stickyIcon" src="img/newNote2.png">
+                <div id="dragStickyIcon"></div>
                 <form id="saveUserForm" method="POST" action="">
                     <input type="submit" id="saveButton" class="sideBarButton" value="Save Board" />
                 </form>
@@ -55,6 +56,7 @@
         </div>
         <div id="stickyBoard">
             <h1>Sticky Board</h1>
+            <div id="underNoteBoxShadow"></div>
         </div>
     </div>
 

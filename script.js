@@ -1,7 +1,6 @@
 // TODO: DOWNLOAD USER DATA
 // TODO: Load users into User dropdown
 
-// TODO: ensure sticky note content saves to note body
 // Store note data here
 const userData = [];
 
@@ -10,11 +9,9 @@ const userData = [];
 // current functionality: double click icon
 // hopeful future functionality: drag and drop onto board
 
-let leftPos = 230;
-let topPos = 200;
 let noteNum = 1;
 
-function addNote() {
+function addNote(leftPos, topPos) {
 	// some of this will be replaced when drag and drop is implemented
 	let newNote = document.createElement('div');
 	newNote.setAttribute('id', `${'note' + noteNum}`);
@@ -22,29 +19,12 @@ function addNote() {
 	newNote.setAttribute('ondblclick', `editNote(this.id)`);
 	let stickyBoard = document.getElementById('stickyBoard');
 
-	if (leftPos > stickyBoard.clientWidth) {
-		leftPos = 230;
-		topPos += 175;
-	}
-	console.log(`attempting to add new note...`);
-	console.log(`Left: ${leftPos}`);
-	console.log(`Top: ${topPos}`);
-	console.log(newNote.getAttribute('id'));
-	newNote.style.cssText = `position:absolute;
-	max-width:150px;
-	width:150px;
-	max-height:150px;
-	height:150px;
-	opacity: 1;
-	left:${leftPos}px;
-	top:${topPos}px;
-	background-image: url('img/fff15b.png');
-	background-size: contain;
-	padding: 0.3rem;
-	padding-top: 1.5rem;`;
+	newNote.style.cssText = `left:${leftPos}px;top:${topPos}px;background-image: url('img/fff15b.png');z-index:${noteNum}`;
 
-	leftPos += 175;
 	stickyBoard.appendChild(newNote);
+
+	//initialize newNote.onmousedown event (prevents the user from having to click the note twice)
+	dragNote(newNote);
 
 	noteNum++;
 }
@@ -93,7 +73,7 @@ function changeColor(colorID) {
 	colorBoxBorder.classList.toggle('activeColorBox');
 
 	//change note background image
-	// CHANGE TEXTAREA BACKGROUND COLOR TODO:
+	// CHANGE TEXTAREA BACKGROUND COLOR
 	let textArea = document.getElementById('editNoteText');
 	colorID = colorID.slice(1);
 	colorID = '#' + colorID;
@@ -188,33 +168,46 @@ textarea.onkeyup = function () {
 
 ////////////////////////////////////////
 // MOVE A STICKY NOTE
-// current functionality: none
-// hopeful future functionality: move sticky around on board
-// MOVEABLE STICKY:
+//
 
-document.addEventListener('mousedown', (e) => {
-	// e.target same as value returned from document.getelementbyID
-	if (e.target.className != 'note') {
-		return;
+function rotaryZIndex(curNote) {
+	let curIndex = curNote.style.zIndex;
+	let allNotes = document.querySelectorAll('.note');
+
+	//For every note that had a higher zindex than curNote's previous
+	// zindex value, decrease their zIndex value by 1
+	for (let note of allNotes) {
+		if (note.id === curNote.id) continue;
+		if (note.style.zIndex > curIndex) note.style.zIndex -= 1;
 	}
-	console.log('Stick clicked!');
-	// dragElement(e.target, stickyBoard);
-});
+	//set current note to highest zIndex
+	curNote.style.zIndex = allNotes.length;
+}
 
-// COPIED FROM:
+// ADAPTED FROM:
 // https://dev.to/shantanu_jana/how-to-create-a-draggable-div-in-javascript-iff
-const dragElement = (element, dragzone) => {
+const dragNote = (note) => {
 	let pos1 = 0,
 		pos2 = 0,
 		pos3 = 0,
 		pos4 = 0;
+
 	//MouseUp occurs when the user releases the mouse button
 	const dragMouseUp = () => {
 		document.onmouseup = null;
-		//onmousemove attribute fires when the pointer is moving while it is over an element.
+		//onmousemove attribute fires when the pointer is moving while it is over an note.
 		document.onmousemove = null;
 
-		element.classList.remove('drag');
+		note.classList.remove('drag');
+		note.style.cursor = 'default';
+
+		////////
+		// solves the transparent corner issue of the sticky
+		///////
+		const underNoteBox = document.getElementById('underNoteBoxShadow');
+		let noteDims = note.getBoundingClientRect();
+		underNoteBox.style.left = `-300px`;
+		underNoteBox.style.top = `-300px`;
 	};
 
 	const dragMouseMove = (event) => {
@@ -226,8 +219,105 @@ const dragElement = (element, dragzone) => {
 		pos3 = event.clientX;
 		pos4 = event.clientY;
 		//offsetTop property returns the top position relative to the parent
-		element.style.top = `${element.offsetTop - pos2}px`;
-		element.style.left = `${element.offsetLeft - pos1}px`;
+		note.style.top = `${note.offsetTop - pos2}px`;
+		note.style.left = `${note.offsetLeft - pos1}px`;
+		note.style.cursor = 'move';
+
+		//PREVENTS DRAGGING STICKIES OFF OF THE SCREEN
+		//pageX/Y coordinates are relative to the top left corner of the whole rendered page (including parts hidden by scrolling),
+		//clientX/Y coordinates are relative to the top left corner of the visible part of the page, "seen" through browser window.
+		//screenX/Y are relative to the physical screen.
+		////////
+		// solves the transparent corner issue of the sticky
+		///////
+		const underNoteBox = document.getElementById('underNoteBoxShadow');
+		let noteDims = note.getBoundingClientRect();
+		underNoteBox.style.left = `${noteDims.left + 22}px`;
+		underNoteBox.style.top = `${noteDims.top + 22}px`;
+		underNoteBox.style.zIndex = note.style.zIndex;
+		///////////////
+		const stickyBoard = document.getElementById('stickyBoard');
+		let stickyBoardDims = stickyBoard.getBoundingClientRect();
+		let mouseX = event.pageX - stickyBoardDims.left;
+		let mouseY = event.pageY - stickyBoardDims.top;
+		//Right boundary
+		if (mouseX >= stickyBoardDims.width) {
+			document.onmousemove = null;
+			note.classList.remove('drag');
+		}
+		//Left
+		if (mouseX <= 0) {
+			document.onmousemove = null;
+			note.classList.remove('drag');
+		}
+		//Top
+		if (mouseY <= 0) {
+			document.onmousemove = null;
+			note.classList.remove('drag');
+		}
+		//Bottom
+		if (mouseY >= stickyBoardDims.height) {
+			document.onmousemove = null;
+			note.classList.remove('drag');
+		}
+	};
+
+	const dragMouseDown = (event) => {
+		//set z-index of cur element to highest of notes, rotates other z-index values
+		rotaryZIndex(note);
+
+		event.preventDefault();
+
+		pos3 = event.clientX;
+		pos4 = event.clientY;
+
+		note.classList.add('drag');
+
+		document.onmouseup = dragMouseUp;
+		document.onmousemove = dragMouseMove;
+	};
+	note.onmousedown = dragMouseDown;
+};
+
+//called once to prep the mousedown event
+dragNewNote();
+document.getElementById('stickyIcon').addEventListener('mousedown', (e) => {
+	dragNewNote();
+});
+
+//function for creating a new sticky note
+function dragNewNote() {
+	const dragIcon = document.getElementById('dragStickyIcon');
+	const staticIcon = document.getElementById('stickyIcon');
+
+	let pos1 = 0,
+		pos2 = 0,
+		pos3 = 0,
+		pos4 = 0;
+
+	//MouseUp occurs when the user releases the mouse button
+	const dragMouseUp = (event) => {
+		document.onmouseup = null;
+		//onmousemove attribute fires when the pointer is moving while it is over an dragIcon.
+		document.onmousemove = null;
+		dragIcon.style.cursor = 'default';
+		dragIcon.style.display = 'none';
+
+		//TODO: insert sticky here
+		addNote(event.pageX - 75, event.pageY - 75);
+	};
+
+	const dragMouseMove = (event) => {
+		event.preventDefault();
+		//clientX property returns the horizontal coordinate of the mouse pointer
+		pos1 = pos3 - event.clientX;
+		//clientY property returns the vertical coordinate of the mouse pointer
+		pos2 = pos4 - event.clientY;
+		pos3 = event.clientX;
+		pos4 = event.clientY;
+		//offsetTop property returns the top position relative to the parent
+		dragIcon.style.top = `${event.clientY - 30}px`;
+		dragIcon.style.left = `${event.clientX - 30}px`;
 	};
 
 	const dragMouseDown = (event) => {
@@ -235,17 +325,12 @@ const dragElement = (element, dragzone) => {
 
 		pos3 = event.clientX;
 		pos4 = event.clientY;
-
-		element.classList.add('drag');
-
 		document.onmouseup = dragMouseUp;
 		document.onmousemove = dragMouseMove;
+		dragIcon.style.cursor = 'grabbing';
+		dragIcon.style.display = 'inline';
+		dragIcon.style.top = `${event.clientY - 30}px`;
+		dragIcon.style.left = `${event.clientX - 30}px`;
 	};
-
-	dragzone.onmousedown = dragMouseDown;
-};
-
-// const dragable = document.getElementById('dragable'),
-// 	dragzone = document.getElementById('dragzone');
-
-// dragElement(dragable, dragzone);
+	staticIcon.onmousedown = dragMouseDown;
+}
