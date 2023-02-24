@@ -18,7 +18,7 @@ async function loadData() {
 			userData = data;
 		});
 	const selectUserDrop = document.getElementById('selectUserDropDown');
-	//sort user data TODO:
+	//sort user data
 	userData = quickSort(userData, 0, userData.length - 1);
 
 	//add to users to the dropdown menu
@@ -84,12 +84,14 @@ function quickSort(items, left, right) {
 function loadBoard() {
 	noteNum = 1;
 	const selectUserDrop = document.getElementById('selectUserDropDown');
-	if (selectUserDrop.value === 'selectUserValue') return;
 
 	//Clear the sticky board
 	let allNotes = document.querySelectorAll('.note');
 	for (let note of allNotes) {
 		note.remove();
+	}
+	if (selectUserDrop.value === 'selectUserValue') {
+		return;
 	}
 
 	//get the object that the user selected
@@ -245,6 +247,7 @@ createUserText.addEventListener('keypress', (e) => {
 });
 
 function createUser() {
+	noteNum = 1; //resets noteNum to prevent errors
 	const textValue = document.getElementById('createUserText').value;
 	document.getElementById('createUserText').value = '';
 	//check for other users with that name
