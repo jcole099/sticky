@@ -1,12 +1,13 @@
 //	Author: James Cole
 //	Project: Sticky Note Application
 //	Class: CS361
-//	Date: 02/15/23
+//	Date: 02/24/23
 //
 
 // Store note data here
 let userData = [];
 let noteNum = 1;
+const statusField = document.getElementById('statusField');
 
 //get data from server
 loadData();
@@ -27,6 +28,8 @@ async function loadData() {
 		option.value = user.userName;
 		selectUserDrop.options.add(option);
 	}
+	//Update status field
+	statusField.innerHTML = `<p>Fetched all user data...</p>`;
 }
 
 /////////////////////////////////////////////////////////
@@ -164,7 +167,7 @@ function saveBoard() {
 			left: note.style.left,
 			content: regText,
 			color: noteColor,
-			zIndex: note.zIndex,
+			zIndex: note.style.zIndex,
 		});
 	}
 	//assign newly built sticky array to the appropriate user
@@ -178,6 +181,7 @@ function saveBoard() {
 			'Content-type': 'application/json; charset=UTF-8',
 		},
 	});
+	statusField.innerHTML = `<p>Saved board data for user '${curUser}'...</p>`;
 }
 
 ////////////////////////////////////////
@@ -185,6 +189,13 @@ function saveBoard() {
 //
 function deleteUser() {
 	const currentUser = document.getElementById('selectUserDropDown').value;
+
+	//Check if user is attempting to delete invalid user
+	if (currentUser === 'selectUserValue') {
+		statusField.innerHTML = `<p>Error: No user selected to delete...</p>`;
+		return;
+	}
+
 	//clear board
 	let allNotes = document.querySelectorAll('.note');
 	for (let note of allNotes) {
@@ -219,17 +230,19 @@ function deleteUser() {
 			'Content-type': 'application/json; charset=UTF-8',
 		},
 	});
+	statusField.innerHTML = `<p>Deleted user '${currentUser}'...</p>`;
 }
 
 ////////////////////////////////////////
 // Create a user
 //
-
-function checkEnter(element) {
-	if (event.key === 'Enter') {
+const createUserText = document.getElementById('createUserText');
+createUserText.addEventListener('keypress', (e) => {
+	if (e.key === 'Enter') {
 		createUser();
+		createUserText.blur(); //takes focus off of textbox
 	}
-}
+});
 
 function createUser() {
 	const textValue = document.getElementById('createUserText').value;
@@ -376,6 +389,7 @@ function editNote(noteID) {
 	// passing the noteID to overlay so it can be used by the saveNote function
 	overlay.className = noteID;
 	overlay.style.display = 'flex';
+	textArea.focus(); //prevents an additional mouse click from user (Quality of life improvement)
 }
 
 function changeColor(colorID) {

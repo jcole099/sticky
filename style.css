@@ -209,6 +209,16 @@ label {
 	top: -300px;
 	left: -300px;
 }
+
+#statusField {
+	color: rgb(0, 66, 0);
+	font-family: 'Courier New', Courier, monospace;
+	position: absolute;
+	font-size: 0.75rem;
+	bottom: 1rem;
+	left: 190px;
+	z-index: 999;
+}
 /* ////////////////////////////////// */
 /* NOTE EDITOR */
 /* ////////////////////////////////// */
