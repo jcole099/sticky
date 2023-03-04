@@ -34,9 +34,7 @@ async function loadData() {
 
 /////////////////////////////////////////////////////////
 // SORTING FUNCTIONS
-////////////
-
-// Quicksort function and helper functions COPIED FROM:
+// Functions swap, partition, quicksort COPIED FROM:
 // https://www.guru99.com/quicksort-in-javascript.html
 function swap(items, leftIndex, rightIndex) {
 	var temp = items[leftIndex];
@@ -78,7 +76,6 @@ function quickSort(items, left, right) {
 	}
 	return items;
 }
-/////////////////////////////////////////////////////////////
 
 //load board data
 function loadBoard() {
@@ -306,8 +303,6 @@ function createUser() {
 
 ////////////////////////////////////////
 // CREATE A NEW STICKY NOTE
-//
-
 function addNote(leftPos, topPos) {
 	//note
 	let newNote = document.createElement('div');
@@ -337,6 +332,7 @@ function addNote(leftPos, topPos) {
 	dragNote(newNote);
 	noteNum++;
 }
+
 ////////////////////////////////////////
 // Delete Sticky Note
 function deleteNote(deleteID) {
@@ -369,7 +365,6 @@ function deleteNote(deleteID) {
 
 ////////////////////////////////////////
 // Edit Sticky Note
-
 function editNote(noteID) {
 	//load text
 	let textArea = document.getElementById('editNoteText');
@@ -424,7 +419,9 @@ function closeEdit() {
 	overlay.style.display = 'none';
 }
 
-// prevents the edit window from disappearing when clicked (doesn't allow the click event to propogate to the overlay parent (who calls the closeEdit() function))
+// prevents the edit window from disappearing when clicked
+//(doesn't allow the click event to propogate to the overlay parent
+//(who calls the closeEdit() function))
 document.getElementById('editWindow').addEventListener('click', (e) => {
 	e.stopPropagation();
 });
@@ -435,7 +432,8 @@ function saveNote() {
 	let textArea = document.getElementById('editNoteText');
 	let note = document.getElementById(noteID);
 	let regText = textArea.value;
-	//Regular expression COPIED FROM: https://stackoverflow.com/questions/784539/how-do-i-replace-all-line-breaks-in-a-string-with-br-elements
+	//Regular expression COPIED FROM:
+	//https://stackoverflow.com/questions/784539/how-do-i-replace-all-line-breaks-in-a-string-with-br-elements
 	regText = regText.replace(/(?:\r\n|\r|\n)/g, '<br>');
 	note.lastChild.innerHTML = regText;
 
@@ -482,7 +480,6 @@ function rotaryZIndex(curNote) {
 
 ////////////////////////////////////////
 // MOVE A STICKY NOTE
-//
 // The dragNote function has been ADAPTED FROM:
 // https://dev.to/shantanu_jana/how-to-create-a-draggable-div-in-javascript-iff
 const dragNote = (note) => {
@@ -526,9 +523,7 @@ const dragNote = (note) => {
 		//pageX/Y coordinates are relative to the top left corner of the whole rendered page (including parts hidden by scrolling),
 		//clientX/Y coordinates are relative to the top left corner of the visible part of the page, "seen" through browser window.
 		//screenX/Y are relative to the physical screen.
-		////////
 		// solves the transparent corner issue of the sticky
-		///////
 		const underNoteBox = document.getElementById('underNoteBoxShadow');
 		let noteDims = note.getBoundingClientRect();
 		underNoteBox.style.left = `${noteDims.left + 22}px`;
