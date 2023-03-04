@@ -1,7 +1,7 @@
 //	Author: James Cole
 //	Project: Sticky Note Application
 //	Class: CS361
-//	Date: 02/24/23
+//	Date: 03/04/23
 //
 
 // Store note data here
@@ -105,7 +105,10 @@ function loadBoard() {
 				newNote.setAttribute('class', 'note');
 				newNote.setAttribute('ondblclick', `editNote(this.id)`);
 				let stickyBoard = document.getElementById('stickyBoard');
-				newNote.style.cssText = `left:${sticky.left};top:${sticky.top};z-index:${sticky.zIndex};background-image:url('img/${sticky.color}.png');`;
+				newNote.style.cssText = `left:${sticky.left};
+                top:${sticky.top};
+                z-index:${sticky.zIndex};
+                background-image:url('img/${sticky.color}.png');`;
 				stickyBoard.appendChild(newNote);
 
 				//delete button
@@ -312,7 +315,10 @@ function addNote(leftPos, topPos) {
 	newNote.setAttribute('class', 'note');
 	newNote.setAttribute('ondblclick', `editNote(this.id)`);
 	let stickyBoard = document.getElementById('stickyBoard');
-	newNote.style.cssText = `left:${leftPos}px;top:${topPos}px;z-index:${noteNum};background-image: url('img/fff15b.png');`;
+	newNote.style.cssText = `left:${leftPos}px;
+    top:${topPos}px;
+    z-index:${noteNum};
+    background-image: url('img/fff15b.png');`;
 	stickyBoard.appendChild(newNote);
 
 	//delete button
@@ -460,10 +466,6 @@ textarea.onkeyup = function () {
 	textarea.value = lines.slice(0, 9).join('\n');
 };
 
-////////////////////////////////////////
-// MOVE A STICKY NOTE
-//
-
 function rotaryZIndex(curNote) {
 	let curIndex = curNote.style.zIndex;
 	let allNotes = document.querySelectorAll('.note');
@@ -478,6 +480,9 @@ function rotaryZIndex(curNote) {
 	curNote.style.zIndex = allNotes.length;
 }
 
+////////////////////////////////////////
+// MOVE A STICKY NOTE
+//
 // The dragNote function has been ADAPTED FROM:
 // https://dev.to/shantanu_jana/how-to-create-a-draggable-div-in-javascript-iff
 const dragNote = (note) => {
@@ -598,7 +603,6 @@ function dragNewNote() {
 		dragIcon.style.display = 'none';
 
 		const stickyBoard = document.getElementById('stickyBoard');
-		// const nodeChain = document.querySelectorAll(':hover');  cool, but doesn't work for this application
 		const nodeChain = document.elementsFromPoint(event.pageX, event.pageY);
 		if (nodeChain.length < 4) {
 			console.error('Cannot place a sticky note there.');
