@@ -79,7 +79,12 @@ label {
 	margin-top: 2rem;
 	/* TODO: cursor: move; */
 	cursor: pointer;
+	margin-bottom: 1rem;
+}
+
+#stickyNoteAndCaption {
 	margin-bottom: 4rem;
+	text-align: center;
 }
 
 #dragStickyIcon {

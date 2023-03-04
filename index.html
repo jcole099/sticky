@@ -38,7 +38,10 @@
     <div id="main">
         <div id="sideBar">
             <div id="CRUD">
-                <img id="stickyIcon" src="img/newNote2.png">
+                <div id="stickyNoteAndCaption">
+                    <img id="stickyIcon" src="img/newNote2.png">
+                    <p>Drag and drop</p>
+                </div>
                 <div id="dragStickyIcon"></div>
                 <button id="saveBoardButton" class="sideBarButton" onclick="saveBoard()">Save Board</button>
                 <button id="deleteUserButton" class="sideBarButton" onclick="deleteUser()">Delete User</button>
@@ -50,7 +53,7 @@
         <div id="stickyBoard">
             <h1>Sticky Board</h1>
             <div id="underNoteBoxShadow"></div>
-            <div id="statusField">Drag and drop the sticky icon onto the Sticky Board to get started.</div>
+            <div id="statusField"></div>
         </div>
     </div>
 
