@@ -1,3 +1,5 @@
+// This server file was created in collaboration between Stephanie Cox and James Cole
+
 const express = require('express');
 var fs = require('fs');
 const app = express();
@@ -20,7 +22,7 @@ const PORT = 22333;
 //GET Route: Sends userData file contents back to James
 app.get('/getUsers', (req, res) => {
 	fs.readFile(
-		'/home/steph/stickyServer/userData.json',
+		'/root/sticky/stickyServer/userData.json',
 		'utf8',
 		(error, data) => {
 			if (error) {
@@ -34,7 +36,7 @@ app.get('/getUsers', (req, res) => {
 //POST Route: Deletes a user from userData file
 app.post('/deleteUser', (req, res) => {
 	fs.readFile(
-		'/home/steph/stickyServer/userData.json',
+		'/root/sticky/stickyServer/userData.json',
 		'utf8',
 		(error, data) => {
 			if (error) {
@@ -64,7 +66,7 @@ app.post('/deleteUser', (req, res) => {
 //POST Route: Save or update a user to userData file
 app.post('/updateUser', (req, res) => {
 	fs.readFile(
-		'/home/steph/stickyServer/userData.json',
+		'/root/sticky/stickyServer/userData.json',
 		'utf8',
 		(error, data) => {
 			if (error) {
@@ -87,7 +89,7 @@ app.post('/updateUser', (req, res) => {
 			}
 			let newData = JSON.stringify(users);
 			fs.writeFile(
-				'/home/steph/stickyServer/userData.json',
+				'/root/sticky/stickyServer/userData.json',
 				newData,
 				(error, data) => {
 					if (error) {
