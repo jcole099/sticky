@@ -2,7 +2,6 @@
 //	Project: Sticky Note Application
 //	Class: CS361
 //	Date: 03/04/23
-//
 
 // Store note data here
 let userData = [];
